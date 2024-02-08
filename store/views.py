@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import CartSerializer
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
+from django.shortcuts import redirect
 
 
 class CartViewSet(viewsets.ModelViewSet):
@@ -19,7 +20,7 @@ class CartViewSet(viewsets.ModelViewSet):
         return self.queryset.filter(user=self.request.user)
 
     def create(self, request, *args, **kwargs):
-        ## Можно записать так, для получения товара (проверка что он уже есть в корзине)
+        # Можно записать так, для получения товара (проверка что он уже есть в корзине)
         # cart_items = Cart.objects.filter(user=request.user,
         #                                  product__id=request.data.get('product'))
         # Или можно так, так как мы переопределили метод get_queryset
@@ -40,7 +41,8 @@ class CartViewSet(viewsets.ModelViewSet):
             else:  # Иначе создаём объект по умолчанию (quantity по умолчанию = 1, так прописали в моделях)
                 cart_item = Cart(user=request.user, product=product)
         cart_item.save()  # Сохранили объект в БД
-        return response.Response({'message': 'Product added to cart'}, status=201)  # Вернули ответ, что всё прошло успешно
+        return response.Response({'message': 'Product added to cart'}, status=201)
+        # Вернули ответ, что всё прошло успешно
 
     def update(self, request, *args, **kwargs):
         # Для удобства в kwargs передаётся id строки для изменения в БД, под параметром pk
@@ -171,3 +173,13 @@ class ProductSingleView(View):
                                'rating': 5.0,
                                'url': data.image.url,
                                })
+
+
+class WishlistView(View):
+
+    def get(self, request):
+        if request.user.is_authenticated:
+            # код который необходим для обработчика
+            return render(request, "store/wishlist.html")
+            # Иначе отправляет авторизироваться
+        return redirect('login:login')
