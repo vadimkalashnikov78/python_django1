@@ -70,6 +70,7 @@ class Cart(models.Model):
 
 class Wishlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    data = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=0)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
 
