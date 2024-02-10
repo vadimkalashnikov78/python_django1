@@ -181,9 +181,19 @@ class WishlistView(View):
         if request.user.is_authenticated:
             # код который необходим для обработчика
 
-            products = Wishlist.objects.annotate(
-
-            ).values('id', 'user', 'product', 'quantity')
+            wishes = Wishlist.objects.all()
+            products1 = Product.objects.all()
+            products = Product.objects.annotate().values('id', 'name', 'description', 'price', 'image')
+            # data = {}
+            # for product in products:
+            #     if product.id in wishes:
+            #         data[product.id] = {
+            #             'id': product.id,
+            #             'name': product.name,
+            #             'description': product.description,
+            #             'price': product.price,
+            #             'url': product.image.url,
+            #         }
             return render(request, "store/wishlist.html", {"data": products})
             # Иначе отправляет авторизоваться
         return redirect('login:login')
