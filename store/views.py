@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views import View
 from django.db.models import OuterRef, Subquery, F, ExpressionWrapper, DecimalField, Case, When
 from django.utils import timezone
-from .models import Product, Discount, Cart
+from .models import Product, Discount, Cart, Wishlist
 from rest_framework import viewsets, response
 from rest_framework.permissions import IsAuthenticated
 from .serializers import CartSerializer
@@ -180,6 +180,10 @@ class WishlistView(View):
     def get(self, request):
         if request.user.is_authenticated:
             # код который необходим для обработчика
-            return render(request, "store/wishlist.html")
-            # Иначе отправляет авторизироваться
+
+            products = Wishlist.objects.annotate(
+
+            ).values('id', 'user', 'product', 'quantity')
+            return render(request, "store/wishlist.html", {"data": products})
+            # Иначе отправляет авторизоваться
         return redirect('login:login')
