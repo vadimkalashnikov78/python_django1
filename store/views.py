@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views import View
 from django.db.models import OuterRef, Subquery, F, ExpressionWrapper, DecimalField, Case, When
 from django.utils import timezone
-from .models import Product, Discount, Cart, Wishlist
+from .models import Product, Discount, Cart, Wish
 from rest_framework import viewsets, response
 from rest_framework.permissions import IsAuthenticated
 from .serializers import CartSerializer
@@ -179,21 +179,25 @@ class WishlistView(View):
 
     def get(self, request):
         if request.user.is_authenticated:
-            # код который необходим для обработчика
+            """
+            Выбираем все объекты из Wish и далее передаем на отображение только те продукты,
+             которые есть в списке Wishlist """
 
-            wishes = Wishlist.objects.all()
-            products1 = Product.objects.all()
-            products = Product.objects.annotate().values('id', 'name', 'description', 'price', 'image')
-            # data = {}
-            # for product in products:
-            #     if product.id in wishes:
-            #         data[product.id] = {
-            #             'id': product.id,
-            #             'name': product.name,
-            #             'description': product.description,
-            #             'price': product.price,
-            #             'url': product.image.url,
-            #         }
+            # wishlist = Wish.objects.all()
+            products = Product.objects.filter(id__in=Wish.objects.values("product_id")).values('id', 'name', 'description', 'price', 'image')
+
             return render(request, "store/wishlist.html", {"data": products})
             # Иначе отправляет авторизоваться
         return redirect('login:login')
+
+    def add_product(self, request, id):
+        pass
+
+    def delete_product(self, request, product_id):
+        wish = Wish.objects.get(product_id=product_id)
+        wish.delete()
+        return render(request, "store/wishlist.html")
+
+
+
+

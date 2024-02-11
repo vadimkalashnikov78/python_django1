@@ -68,8 +68,6 @@ class Cart(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
 
-class Wishlist(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
+class Wish(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
